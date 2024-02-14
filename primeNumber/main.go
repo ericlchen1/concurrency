@@ -39,19 +39,16 @@ func main() {
 
 			for {
 				n := atomic.AddInt32(&currentNum, int32(BATCH_SIZE))
-				if n >= LIMIT {
-					break
-				}
 				numBatchPrimeNumbers := int32(0)
-				for i := n - BATCH_SIZE; i < n; i+=2 {
-					if n >= LIMIT {
-						break
-					}
+				for i := n - BATCH_SIZE; i < n && i < LIMIT; i+=2 {
 					if isPrime(i) {
 						numBatchPrimeNumbers += 1
 					}
 				}
 				atomic.AddInt32(&numPrimeNumbers, numBatchPrimeNumbers)
+				if n >= LIMIT {
+					break
+				}
 			}
 		}()
 	}
