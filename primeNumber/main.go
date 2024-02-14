@@ -9,16 +9,15 @@ import (
 )
 
 const THREADS = 10
-const LIMIT int32 = 1000000
-const BATCH_SIZE = 10000
-const START_NUM = 2
+const LIMIT int32 = 100000000
+const BATCH_SIZE = 100
 
-var currentNum int32 = START_NUM - BATCH_SIZE
+var currentNum int32 = 3
 var numPrimeNumbers int32 = 0
 
 func isPrime(n int32) bool {
 	ceil := int32(math.Sqrt(float64(n)))
-	for i := int32(2); i < ceil; i++ {
+	for i := int32(3); i <= ceil; i+=2 {
 		if n%i == 0 {
 			return false
 		}
@@ -40,26 +39,26 @@ func main() {
 
 			for {
 				n := atomic.AddInt32(&currentNum, int32(BATCH_SIZE))
+				if n >= LIMIT {
+					break
+				}
 				numBatchPrimeNumbers := int32(0)
-				for n < n + BATCH_SIZE {
+				for i := n - BATCH_SIZE; i < n; i+=2 {
 					if n >= LIMIT {
 						break
 					}
-					if isPrime(n) {
+					if isPrime(i) {
 						numBatchPrimeNumbers += 1
 					}
-					n += 1
 				}
 				atomic.AddInt32(&numPrimeNumbers, numBatchPrimeNumbers)
-
-				if currentNum >= LIMIT {
-					break
-				}
 			}
 		}()
 	}
 
 	wg.Wait()
+	
+	numPrimeNumbers += 1 // Include 2
 	
 	fmt.Printf("Found %d prime numbers\n", numPrimeNumbers)
 	fmt.Printf("Took %s\n", time.Since(startTime))
