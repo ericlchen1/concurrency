@@ -55,7 +55,9 @@ func main() {
 
 	wg.Wait()
 	
-	numPrimeNumbers += 1 // Include 2
+	if LIMIT >= 2 {
+		atomic.AddInt32(&numPrimeNumbers, 1) // Include 2
+	}
 	
 	fmt.Printf("Found %d prime numbers\n", numPrimeNumbers)
 	fmt.Printf("Took %s\n", time.Since(startTime))
