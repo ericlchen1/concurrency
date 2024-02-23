@@ -12,7 +12,7 @@ type Job func()
 
 type ThreadPool struct {
 	workQueue chan Job
-	wg sync.WaitGroup
+	wg        sync.WaitGroup
 }
 
 func NewThreadPool(numThreads int) *ThreadPool {
@@ -49,6 +49,6 @@ func main() {
 			fmt.Printf("Job %d\n", i)
 		})
 	}
-	
+
 	threadPool.Wait()
 }

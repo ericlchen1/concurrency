@@ -9,16 +9,16 @@ import (
 const ELEMENTS = 100_000
 
 type Node struct {
-	val int64
+	val  int64
 	next *Node
 	prev *Node
 }
 
 type ConcurrentQueue struct {
-	head *Node
-	tail *Node
+	head   *Node
+	tail   *Node
 	length int64
-	mutex sync.Mutex
+	mutex  sync.Mutex
 }
 
 func NewConcurrentQueue() *ConcurrentQueue {
@@ -28,10 +28,10 @@ func NewConcurrentQueue() *ConcurrentQueue {
 	tail.prev = head
 
 	return &ConcurrentQueue{
-		head: head,
-		tail: tail,
+		head:   head,
+		tail:   tail,
 		length: 0,
-		mutex: sync.Mutex{},
+		mutex:  sync.Mutex{},
 	}
 }
 
@@ -41,19 +41,19 @@ func (q *ConcurrentQueue) Push(val int64) {
 
 	prevLastElement := q.tail.prev
 	prevLastElement.next = &Node{
-		val: val,
+		val:  val,
 		prev: prevLastElement,
 		next: q.tail,
 	}
 	q.tail.prev = prevLastElement.next
-	
+
 	q.length++
 }
 
 func (q *ConcurrentQueue) Pop() (int64, error) {
 	q.mutex.Lock()
 	defer q.mutex.Unlock()
-	
+
 	if q.length == 0 {
 		return 0, fmt.Errorf("queue is empty")
 	}
@@ -72,17 +72,17 @@ func main() {
 
 	pushGroup := sync.WaitGroup{}
 	popGroup := sync.WaitGroup{}
-	
+
 	// Sweet new behavior for golang 1.22.2
 	for i := range ELEMENTS {
 		pushGroup.Add(1)
-		go func (i int64) {
+		go func(i int64) {
 			defer pushGroup.Done()
 			queue.Push(i)
 		}(int64(i))
 
 		popGroup.Add(1)
-		go func () {
+		go func() {
 			defer popGroup.Done()
 			for {
 				val, err := queue.Pop()
@@ -91,9 +91,9 @@ func main() {
 					break
 				}
 			}
-		} ()
+		}()
 	}
-	
+
 	pushGroup.Wait()
 	popGroup.Wait()
 

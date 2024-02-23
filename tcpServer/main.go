@@ -12,7 +12,7 @@ const TIMEOUT = 5 * time.Second
 func handleConnection(connChan chan net.Conn) {
 	for {
 		select {
-		case conn := <- connChan:
+		case conn := <-connChan:
 			buffer := make([]byte, 1024)
 
 			select {
@@ -22,14 +22,14 @@ func handleConnection(connChan chan net.Conn) {
 					log.Fatal(err)
 				}
 
-				_, err =conn.Read(buffer)
+				_, err = conn.Read(buffer)
 				if err != nil {
 					log.Println("Read error:", err)
 					conn.Write([]byte("HTTP/1.1 500 Internal Server Error\r\n\r\nFailed to read request\r\n"))
 					conn.Close()
 					continue
 				}
-				
+
 				workDone := make(chan bool)
 				go func() {
 					// Theoretical work here on request
