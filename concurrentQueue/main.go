@@ -80,9 +80,7 @@ func main() {
 			defer pushGroup.Done()
 			queue.Push(i)
 		}(int64(i))
-	}
 
-	for range ELEMENTS {
 		popGroup.Add(1)
 		go func () {
 			defer popGroup.Done()
@@ -93,7 +91,7 @@ func main() {
 					break
 				}
 			}
-		}()
+		} ()
 	}
 	
 	pushGroup.Wait()
